@@ -6,8 +6,12 @@ Esta es solo la API, en esta se usaron las siguientes tecnologías: [NestJS](htt
 
 ## Tabla de contenido:
 
+- [Inicialización](#inicialización)
+  - [Instalar dependencias](#instalar-dependencias)
+  - [Variables de entorno](#variables-de-entorno)
+  - [Migración](#migración-prisma)
+  - [Iniciar en modo desarrollo](#iniciar-en-modo-desarrollo)
 - [Rutas protegidas](#rutas-protegidas)
-- [Inicialización]
 - [Endpoints](#endpoints)
   - [`/auth` routes](#auth)
   - [`/users` routes](#users)
