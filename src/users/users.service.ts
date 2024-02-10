@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { PrismaService } from "src/prisma/prisma.service";
 
 @Injectable()
@@ -16,6 +16,42 @@ export class UsersService {
         updatedAt: true,
       },
     });
+
+    return user;
+  }
+
+  async deleteProfile(userId: string) {
+    const deletedAccount = await this.prisma.user.delete({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    return deletedAccount;
+  }
+
+  async getUser(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        createdAt: true,
+        _count: {
+          select: {
+            Post: true,
+          },
+        },
+      },
+    });
+
+    if (!user) throw new BadRequestException("Invalid user id");
 
     return user;
   }

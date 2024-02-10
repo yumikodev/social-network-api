@@ -22,11 +22,12 @@ export class UsersController {
   }
 
   @Delete("/profile")
-  deleteProfile(@Req() req: Request) {}
+  deleteProfile(@Req() req: Request) {
+    return this.usersService.deleteProfile(req["userId"]);
+  }
 
   @Get("/:id")
-  getUser(@Param("id") id: string) {}
-
-  @Get("/search")
-  findUser(@Query("query") query: string) {}
+  getUser(@Param("id") id: string) {
+    return this.usersService.getUser(id);
+  }
 }

@@ -19,20 +19,26 @@ model User {
   updatedAt  DateTime    @default(now()) @updatedAt
   comments   Comment[]
   likedPosts LikedPost[]
+  Post       Post[]
 }
 
 model Post {
   id        String      @id @default(uuid())
   content   String
+  authorId  String
+  author    User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
   createdAt DateTime    @default(now())
   likes     LikedPost[]
+  comments  Comment[]
 }
 
 model Comment {
   id        String   @id @default(uuid())
   content   String
   authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
+  postId    String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 }
 
@@ -40,6 +46,6 @@ model LikedPost {
   id     String @id @default(uuid())
   postId String
   userId String
-  post   Post   @relation(fields: [postId], references: [id])
-  user   User   @relation(fields: [userId], references: [id])
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

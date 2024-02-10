@@ -1,73 +1,144 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Social Network (API)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este es un ejemplo práctico una "red social" en la cual se pueden crear usuarios, publicaciones, darles like y comentar.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Esta es solo la API, en esta se usaron las siguientes tecnologías: [NestJS](https://nestjs.com/), [Prisma (SQLite)](https://www.prisma.io/), [JWT (Autenticación)](https://jwt.io/)
 
-## Description
+## Tabla de contenido:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [Rutas protegidas](#rutas-protegidas)
+- [Inicialización]
+- [Endpoints](#endpoints)
+  - [`/auth` routes](#auth)
+  - [`/users` routes](#users)
+  - [`/posts` routes](#posts)
 
-## Installation
+## Inicialización
+
+Para iniciar el proyecto, obviamente hay que configurar algunas cosas, compilar, etc. Aquí verás los comandos básicos.
+
+Eres libre de usar el gestro de paquetes de tu gusto (Yarn, PNPM, etc).
+
+### Instalar dependencias
 
 ```bash
-$ pnpm install
+npm install
 ```
 
-## Running the app
+### Variables de entorno
+
+Copia y pega el contenido dentro de `.env.example` en un nuevo archivo `.env`;
+
+```toml
+DATABASE_URL="file:./dev.db"
+ACCESS_SECRET="mysecretkey" // Change this
+```
+
+### Migración (Prisma)
 
 ```bash
-# development
-$ pnpm run start
-
-# watch mode
-$ pnpm run start:dev
-
-# production mode
-$ pnpm run start:prod
+npx prisma migrate dev --name init
 ```
 
-## Test
+### Iniciar en modo desarrollo
 
 ```bash
-# unit tests
-$ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
+npm run start:dev
 ```
 
-## Support
+## Rutas protegidas
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Existen rutas protegidas, para acceder a ellas se les debe pasar un [**Header**](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization) al momento de hacer una petición.
 
-## Stay in touch
+```
+Authorization: Bearer <token>
+```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Usted reemplazaría `<token>` por el token que se obtiene al [crear una cuenta](#auth) o [iniciar sesión](#auth).
 
-## License
+En el caso que no se agregue ese **Header** a la petición, el token esté expirado/malformado o el contenido del **Header** sea inválido, el servidor responderá con un código [`401`Unauthorized](https://developer.mozilla.org/es/docs/Web/HTTP/Status/401)
 
-Nest is [MIT licensed](LICENSE).
+## Endpoints
+
+- ### `/auth`
+
+  - (**POST**) `/login`: Iniciar sesión
+
+    Body:
+
+    ```json
+    {
+      "email": "...",
+      "password": "****"
+    }
+    ```
+
+  - (**POST**) `/register`: Crear cuenta.
+
+    Body:
+
+    ```json
+    {
+      "username": "...",
+      "email": "...",
+      "password": "****"
+    }
+    ```
+
+- ### `/users`
+
+  - (**GET**) `/profile`: Obtener el perfil actual.
+  - (**GET**) `/:id`: Obtiene el perfíl de un usuario (por id).
+  - (**DELETE**) `/profile`: Elimina la cuenta actual.
+
+- ### `/posts`
+
+  - (**GET**) `/`: Obtiene todos los posts.
+
+    > Esta ruta tiene paginación, debera de pasarle algúnos [parámetros de busqueda](https://en.wikipedia.org/wiki/Query_string).
+
+    Representación en json:
+
+    ```jsonc
+    {
+      "page": 1, // Indica cuál es la página.
+      "limit": 10, // El límite de publicaciones por página.
+      "userId": "...", // (Opcional) Filtra publicaciones de un usuario
+    }
+    ```
+
+  - (**GET**) `/:id`: Obtiene una publicación por id.
+  - (**GET**) `/:id/like`: Si es que se le dió like a la publicación.
+  - (**POST**) `/:id/like`: Alterna el like a una publicación.
+  - (**GET**) `/:id/comments`: Recupera los comentarios a una publicación.
+  - (**POST**) `/:id/comments`: Crea un comentario.
+
+    Body:
+
+    ```json
+    {
+      "content": "..."
+    }
+    ```
+
+  - (**POST**) `/`: Crea una publicación.
+
+    Body:
+
+    ```json
+    {
+      "content": "..."
+    }
+    ```
+
+  - (**PATCH**) `/:id`: Edita la publicación.
+
+    Body:
+
+    ```json
+    {
+      "content": "..."
+    }
+    ```
+
+  - (**DELETE**) `/:id`: Elimina la publicación.
